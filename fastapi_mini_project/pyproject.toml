@@ -11,13 +11,3 @@ dependencies = [
     "sqlalchemy>=2.0.48",
     "uvicorn[standard]>=0.41.0",
 ]
-[tool.ruff]
-line-length = 88
-select = ["E", "F", "I"]  # 기본 에러, 유효하지 않은 이름, import 정렬 체크
-
-[tool.ruff.lint]
-fixable = ["ALL"]
-unfixable = []
-
-[tool.ruff.format]
-quote-style = "double"

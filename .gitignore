@@ -1,2 +1,14 @@
+# env
 .env
-.env.dev
+.env.*
+**/.env
+**/.env.*
+
+# ide
+.idea
+
+# git message
+.gitmessage.txt
+
+# python-version
+.python-version
