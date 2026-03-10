@@ -1,2 +1,7 @@
 .env
 .env.dev
+#가상환경
+.venv
+
+.idea
+.gitmessage.txt
