@@ -9,3 +9,6 @@
 
 # git message
 .gitmessage.txt
+
+# python-version
+.python-version
