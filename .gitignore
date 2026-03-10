@@ -1,7 +1,11 @@
+# env
 .env
-.env.dev
-#가상환경
-.venv
+.env.*
+**/.env
+**/.env.*
 
+# ide
 .idea
+
+# git message
 .gitmessage.txt
