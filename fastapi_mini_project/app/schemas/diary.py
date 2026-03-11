@@ -24,3 +24,10 @@ class DiaryResponse(DiaryBase):
 
     class Config:
         from_attributes = True
+
+
+class DiaryListResponse(BaseModel):
+    total: int
+    page: int
+    size: int
+    diaries: list[DiaryResponse]
