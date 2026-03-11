@@ -29,3 +29,4 @@ class DiaryRepo:
 
 
     def delete(self, db: Session, diary: Diary):
+        pass
