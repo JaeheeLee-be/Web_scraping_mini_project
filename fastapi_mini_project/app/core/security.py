@@ -10,7 +10,7 @@
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from app.core.config import settings
 
@@ -24,6 +24,14 @@ def get_password_hash(password: str) -> str:
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
+
+def verify_refresh_token(token: str) -> dict:
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        # refresh token인지 확인
+        return payload
+    except JWTError:
+        raise HTTPException(status_code=401, detail="유효하지 않는 Refresh Token입니다.")
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
@@ -46,3 +54,14 @@ def decode_token(token: str) -> dict:
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     payload = decode_token(token)
+    user_id = payload.get("sub")
+
+    if user_id is None:
+        raise HTTPException(status_code=401, detail="유효하지 않는 토큰입니다.")
+
+    user = await User.get_or_none(id=int(user_id))
+
+    if user is None:
+        raise HTTPException(status_code=401, detail="유저를 찾을 수 없습니다.")
+
+    return user
