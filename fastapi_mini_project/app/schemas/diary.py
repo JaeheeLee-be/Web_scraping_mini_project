@@ -20,7 +20,7 @@ class DiaryUpdate(BaseModel):
 class DiaryResponse(DiaryBase):
     id: int
     user_id: int
-    date: datetime
+    created_at: datetime
 
     class Config:
         from_attributes = True
