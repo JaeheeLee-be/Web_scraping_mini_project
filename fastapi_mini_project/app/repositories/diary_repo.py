@@ -29,4 +29,8 @@ class DiaryRepo:
 
 
     def delete(self, db: Session, diary: Diary):
-        pass
+        db.delete(diary)
+        db.commit()
+
+
+diary_repo = DiaryRepo()
