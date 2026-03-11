@@ -8,11 +8,16 @@ DATABASE_URL = f"postgres://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PA
 
 # Aerich와 Tortoise가 공유하는 설정 딕셔너리
 TORTOISE_ORM = {
-    "connections": {"default": DATABASE_URL},
+    "connections": {"default": DATABASE_URL}, # 이미 os.getenv를 통해 url을 만들어서 settings.가 필요하지 않음
     "apps": {
         "models": {
-            # 초기 마이그레이션을 위해 aerich.models를 포함합니다.
-            "models": ["app.models.user", "aerich.models"],
+            "models": [
+                "app.models.user",
+                "app.models.diary",
+                "app.models.quote",
+                "app.models.question",
+                "aerich.models"
+            ],
             "default_connection": "default",
         }
     },

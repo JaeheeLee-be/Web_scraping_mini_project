@@ -22,7 +22,14 @@ class LoginUser(BaseModel):
 
 class ResponseUser(BaseModel):
     # TODO: User모델 확정 후 필드 추가
-    pass
+    id: int
+    nickname: str
+    email: EmailStr
+
+    model_config = {
+        "from_attributes": True   ####  from_attributes 사용 이유: FastAPI와 Tortoise ORM 사용시 발생할 수 있는 충돌 방지
+    }
+
 
 class RefreshTokenRequest(BaseModel):
     refresh_token : str = Field(..., description="재발급용 토큰")
