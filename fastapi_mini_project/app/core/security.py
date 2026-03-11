@@ -31,6 +31,10 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def create_access_token(data: dict) -> str:
-    pass
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINS)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, Settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
 
 # rebase 내 분기 1 팀장님 pr 2 내 기능 브런치 = 1 로컬의 develop == header
