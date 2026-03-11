@@ -41,15 +41,17 @@ async def get_list(
     query = query.order_by(order)
 
     total = await query.count()
+    diaries = await query.offset((page - 1) * size).limit(size)
 
+    return total, diaries
+
+# Update
 async def update(self, diary: Diary, data: DiaryUpdate) -> Diary:
     update_data = data.model_dump(exclude_unset=True)
     await diary.update_from_dict(update_data).save()
     return diary
 
 
+# Delete
 async def delete(self, diary: Diary) -> None:
     await diary.delete()
-
-
-diary_repository = DiaryRepo()
