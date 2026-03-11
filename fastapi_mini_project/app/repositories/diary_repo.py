@@ -33,4 +33,4 @@ class DiaryRepo:
         db.commit()
 
 
-diary_repo = DiaryRepo()
+diary_repository = DiaryRepo()
