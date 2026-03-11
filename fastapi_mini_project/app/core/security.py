@@ -31,3 +31,6 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def create_access_token(data: dict) -> str:
+    pass
+
+# rebase 내 분기 1 팀장님 pr 2 내 기능 브런치 = 1 로컬의 develop == header
