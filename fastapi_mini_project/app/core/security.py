@@ -17,6 +17,7 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.util import deprecated
 
 
+
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
