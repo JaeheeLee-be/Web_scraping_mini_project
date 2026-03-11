@@ -7,7 +7,7 @@ async def get_user_id(user_id: int):
 async def get_user_email(email: str):
     return await User.get_or_none(email=email)
 
-async def get_user_username(nickname: str):
+async def get_user_nickname(nickname: str):
     return await User.get_or_none(nickname=nickname)
 
 async def create_user(nickname: str, email: str, password_hash: str):
