@@ -1,8 +1,8 @@
 from fastapi import HTTPException, status
-from repositories.diary_repo import (
+from app.repositories.diary_repo import (
     create, get_by_id, get_list, update, delete
 )
-from schemas.diary import DiaryCreate, DiaryUpdate, DiaryListResponse
+from app.schemas.diary import DiaryCreate, DiaryUpdate, DiaryListResponse
 
 
 class DiaryService:
