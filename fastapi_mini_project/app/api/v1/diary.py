@@ -1,14 +1,13 @@
 from fastapi import APIRouter, Depends, status
-from core.security import get_current_user
-# 아까 에러 났던 QuoteResponse도 여기서 가져옵니다.
-from schemas.diary import (
+from app.core.security import get_current_user
+from app.schemas.diary import (
     DiaryCreate,
     DiaryUpdate,
     DiaryResponse,
     DiaryListResponse,
-    QuoteResponse
 )
-from services.diary_service import diary_service
+from app.services.diary_service import diary_service
+from app.schemas.quote import QuoteResponse
 
 router = APIRouter(prefix="/diaries", tags=["Diary"])
 
