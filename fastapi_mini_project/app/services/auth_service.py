@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from app.core.security import get_password_hash, verify_password
 from app.repositories.user_repo import get_user_email, get_user_nickname, create_user
-from app.schemas.user import CreateUser
+from app.schemas.user import CreateUser, LoginUser
 
 from fastapi_mini_project.app.core.security import verify_password
 
