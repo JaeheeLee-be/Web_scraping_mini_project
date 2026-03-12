@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from app.repositories import quote_repo
 
 
-async def run_quote_scraper(max_pages: int = 3):
+async def run_quote_scraper(max_pages: int = 5):
     base_url = "https://saramro.com"
     list_url = f"{base_url}/quotes"
     headers = {
