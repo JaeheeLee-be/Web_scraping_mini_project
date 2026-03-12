@@ -20,3 +20,4 @@ class TokenBlacklist(models.Model):
 
     class Meta:
         table = "token_blacklist"
+
