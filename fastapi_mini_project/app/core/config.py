@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     ALGORITHM : str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINS : int = 30
     REFRESH_TOKEN_EXPIRE_DAYS : int = 30
+    DATABASE_URL: str
 
     model_config = SettingsConfigDict(
         env_file = ".env",
