@@ -15,7 +15,6 @@ from fastapi.security import OAuth2PasswordBearer
 from app.core.config import settings
 from app.models.user import User
 
-
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
