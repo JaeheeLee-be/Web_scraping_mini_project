@@ -4,7 +4,7 @@ from app.schemas.quote import QuoteResponse, BookmarkCreate, BookmarkResponse
 from app.services import quote_service
 from app.core.security import get_current_user
 
-router = APIRouter()
+router = APIRouter(prefix="/quote", tags=["Quote"])
 
 # 1. 오늘의 랜덤 명언 조회
 @router.get("/random", response_model=QuoteResponse)
