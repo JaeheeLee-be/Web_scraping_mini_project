@@ -1,38 +1,36 @@
-from pydantic import BaseModel, Field
-from typing import Optional, List
-
-# 1. 명언 기본 구조
-class QuoteBase(BaseModel):
-    content: str = Field(..., description="명언 내용을 입력하세요.")
-    author: str = Field(..., max_length=255, description="저자 이름을 입력하세요.")
+from pydantic import BaseModel, ConfigDict
+from typing import List, Optional
+from datetime import datetime
 
 
-# 2. 명언 응답 (조회 시 사용)
-class QuoteResponse(QuoteBase):
+# 1. 명언 정보 기본 (조회용)
+class QuoteResponse(BaseModel):
     id: int
+    content: str
+    author: str
+
+    # DB 객체를 Pydantic으로 자동 변환하기 위한 설정
+    model_config = ConfigDict(from_attributes=True)
 
 
-    class Config:
-        from_attributes = True
-
-# 3. 북마크 생성을 위한 입력
+# 2. 북마크 생성 시 요청 바디 (클라이언트 -> 서버)
 class BookmarkCreate(BaseModel):
-    quote_id: int = Field(..., description="북마크할 명언의 ID")
+    quote_id: int
 
 
-# 4. 명언 목록 응답 (DiaryListResponse와 동일한 스타일)
-class QuoteListResponse(BaseModel):
-    total: int = Field(..., description="전체 데이터 개수")
-    page: int = Field(..., description="현재 페이지 번호")
-    size: int = Field(..., description="페이지당 데이터 개수")
-    quotes: List[QuoteResponse] = Field(..., description="명언 목록")
-
-
-# 5. 북마크 응답 (사용자의 북마크 조회 시 사용)
+# 3. 북마크 결과 응답 (서버 -> 클라이언트)
 class BookmarkResponse(BaseModel):
     id: int
     user_id: int
-    quote: QuoteResponse
+    quote_id: int
+    created_at: datetime  # 언제 북마크했는지 정보 포함 가능
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
+
+# 4. 내 북마크 목록 전체 응답 (메타데이터 포함 시)
+class MyBookmarkListResponse(BaseModel):
+    total: int
+    bookmarks: List[QuoteResponse]  # 북마크한 명언들의 실제 내용 리스트
+
+    model_config = ConfigDict(from_attributes=True)
