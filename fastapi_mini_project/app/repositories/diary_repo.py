@@ -1,5 +1,5 @@
-from models.diary import Diary
-from schemas.diary import DiaryCreate, DiaryUpdate
+from app.models.diary import Diary
+from app.schemas.diary import DiaryCreate, DiaryUpdate
 from typing import Optional
 from tortoise.expressions import Q
 
