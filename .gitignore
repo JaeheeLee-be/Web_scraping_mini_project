@@ -12,3 +12,6 @@
 
 # python-version
 .python-version
+
+pycache/
+*.pyc
