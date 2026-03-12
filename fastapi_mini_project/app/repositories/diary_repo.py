@@ -46,7 +46,8 @@ async def get_list(
 # Update
 async def update(diary: Diary, data: DiaryUpdate) -> Diary:
     update_data = data.model_dump(exclude_unset=True)
-    await diary.update_from_dict(update_data).save()
+    diary.update_from_dict(update_data)
+    await diary.save()
     return diary
 
 
