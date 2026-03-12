@@ -3,7 +3,6 @@ import requests
 from bs4 import BeautifulSoup
 from app.repositories import quote_repo
 
-
 async def run_quote_scraper(max_pages: int = 5):
     url = "https://saramro.com/quotes"
     headers = {
