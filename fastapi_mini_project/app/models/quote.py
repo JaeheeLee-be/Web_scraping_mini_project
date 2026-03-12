@@ -13,9 +13,9 @@ class Quote(models.Model):
 
 
 class Bookmark(models.Model):
-    id = fields.IntField(pk=True)
-    user = fields.ForeignKeyField("models.User", related_name="bookmarks")
+    user_id = fields.IntField()
     quote = fields.ForeignKeyField("models.Quote", related_name="bookmarks")
 
     class Meta:
-        table = "bookmarks"
+        # 유저ID와 명언ID의 조합이 유일해야 함 (중복 방지)
+        unique_together = (("user_id", "quote_id"),)
