@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.db.database import init_db, close_db
-from app.api.v1 import diary
+from app.api.v1 import diary, auth
 
 app = FastAPI()
 
