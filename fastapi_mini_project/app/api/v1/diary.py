@@ -1,54 +1,39 @@
 from fastapi import APIRouter, Depends, status
+from typing import List
 from app.core.security import get_current_user
-from app.schemas.diary import DiaryCreate, DiaryUpdate, DiaryResponse, DiaryListResponse
-from app.services.diary_service import diary_service
+# from app.schemas.quote import QuoteResponse, BookmarkCreate
+from app.services import quote_service
+
+router = APIRouter(prefix="/quotes", tags=["Quote"])
+
+# 랜덤 명언 조회
+@router.get("/random", response_model=QuoteResponse)
+async def get_random_quote(
+    current_user=Depends(get_current_user)):
+
+    return await quote_service.get_random_quote_service()
 
 
-router = APIRouter(prefix="/diaries", tags=["Diary"])
+# 내 북마크 목록 조회
+@router.get("/bookmarks", response_model=List[QuoteResponse])
+async def list_my_bookmarks(
+    current_user=Depends(get_current_user)):
 
-# 목록 조회
-@router.get("", response_model=DiaryListResponse)
-async def list_diaries(
-        search: str = "",
-        sort: str = "newest",
-        page: int = 1,
-        size: int = 5,
-        current_user=Depends(get_current_user)
-):
-    return await diary_service.get_diary_list(current_user.id, search, sort, page, size)
-
-# 단일 조회
-@router.get("/{diary_id}", response_model=DiaryResponse)
-async def get_diary(
-        diary_id: int,
-        current_user=Depends(get_current_user)
-):
-    return await diary_service.get_diary(diary_id, current_user.id)
+    return await quote_service.get_my_bookmarks_service(current_user.id)
 
 
-# 생성
-@router.post("", response_model=DiaryResponse, status_code=status.HTTP_201_CREATED)
-async def create_diary(
-        data: DiaryCreate,
-        current_user=Depends(get_current_user)
-):
-    return await diary_service.create_diary(current_user.id, data)
+# 북마크 추가
+@router.post("/bookmarks", response_model=QuoteResponse, status_code=status.HTTP_201_CREATED)
+async def add_bookmark(
+    data: BookmarkCreate,
+    current_user=Depends(get_current_user)):
+    return await quote_service.add_bookmark_service(current_user.id, data.quote_id)
 
 
-# 수정
-@router.patch("/{diary_id}", response_model=DiaryResponse)
-async def update_diary(
-        diary_id: int,
-        data: DiaryUpdate,
-        current_user=Depends(get_current_user)
-):
-    return await diary_service.update_diary(diary_id, current_user.id, data)
+# 북마크 해제
+@router.delete("/bookmarks/{quote_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_bookmark(
+    quote_id: int,
+    current_user=Depends(get_current_user)):
 
-
-# 삭제
-@router.delete("/{diary_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_diary(
-        diary_id: int,
-        current_user=Depends(get_current_user)
-):
-    await diary_service.delete_diary(diary_id, current_user.id)
+    await quote_service.remove_bookmark_service(current_user.id, quote_id)
