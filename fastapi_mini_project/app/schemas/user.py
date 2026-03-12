@@ -17,11 +17,10 @@ class CreateUser(BaseModel):
         return v
 
 class LoginUser(BaseModel):
-    nickname : str
+    email : EmailStr
     password : str
 
 class ResponseUser(BaseModel):
-    # TODO: User모델 확정 후 필드 추가
     id: int
     nickname: str
     email: EmailStr

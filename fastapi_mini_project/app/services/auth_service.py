@@ -1,11 +1,7 @@
+from app.core.security import get_password_hash, verify_password, create_access_token, create_refresh_token, decode_token, verify_refresh_token
+from app.schemas.user import CreateUser, LoginUser, TokenResponse, ResponseUser, RefreshTokenRequest, UpdateUser, UpdatePassword
+from app.repositories.user_repo import get_user_email, get_user_nickname, create_user, add_token_blacklist, get_token_blacklist, get_update_user, get_update_password
 from fastapi import HTTPException
-from app.core.security import get_password_hash, verify_password, create_access_token, create_refresh_token
-from app.schemas.user import CreateUser, LoginUser, TokenResponse
-from app.repositories.user_repo import get_user_email, get_user_nickname, create_user
-
-from fastapi_mini_project.app.core.security import decode_token
-from fastapi_mini_project.app.models.user import TokenBlacklist
-from fastapi_mini_project.app.repositories.user_repo import add_token_blacklist
 
 
 async def register(user_data: CreateUser):
@@ -28,7 +24,7 @@ async def register(user_data: CreateUser):
     )
 
 async def login(user_data: LoginUser):
-    response_email = await get_user_email(user_data. email)
+    response_email = await get_user_email(user_data.email)
 
     if not response_email:
         raise HTTPException(status_code=401, detail="존재하지 않는 이메일입니다.")
@@ -45,12 +41,42 @@ async def login(user_data: LoginUser):
         token_type="bearer"
     )
 
-async def logout(user_data: current_user):
+async def logout(token: str, current_user):
     payload = decode_token(token)
     expire_at = payload.get("exp")
 
     await add_token_blacklist(
         token=token,
-        user_id=current_user
-
+        user_id=current_user.id,
+        expired_at=expire_at
     )
+
+async def get_me(current_user):
+    return ResponseUser(
+        id=current_user.id,
+        nickname=current_user.nickname,
+        email=current_user.email
+    )
+
+async def refresh(data: RefreshTokenRequest):
+    blacklist = await get_token_blacklist(data.refresh_token)
+
+    if blacklist:
+        raise HTTPException(status_code=401, detail="이미 만료된 토큰입니다.")
+
+    payload = verify_refresh_token(data.refresh_token)
+
+    user_id = payload.get("sub")
+    new_access_token = create_access_token(data={"sub": user_id})
+
+    return {"access_token": new_access_token}
+
+async def update_user(current_user, data: UpdateUser):
+    return await get_update_user(current_user, data)
+
+async def update_password(current_user, data: UpdatePassword):
+    if not verify_password(data.current_password, current_user.password_hash):
+        raise HTTPException(status_code=401, detail="현재 비밀번호가 일치하지 않습니다.")
+
+    new_hash = get_password_hash(data.new_password)
+    return await get_update_password(current_user, new_hash)

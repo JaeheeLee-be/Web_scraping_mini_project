@@ -21,3 +21,16 @@ async def add_token_blacklist(token: str, user_id: int, expired_at):
         user_id=user_id,
         expired_at=expired_at
     )
+
+async def get_token_blacklist(token: str):
+    return await TokenBlacklist.get_or_none(token=token)
+
+async def get_update_user(current_user, data):
+    await current_user.update_from_dict(data.model_dump(exclude_none=True))
+    await current_user.save()
+    return current_user
+
+async def get_update_password(current_user, data):
+    current_user.password_hash = data
+    await current_user.save()
+    return current_user
