@@ -13,7 +13,7 @@ app.include_router(quote.router, prefix="/api/vi/quote")
 async def startup():
     await init_db()
 
-    result = await run_quote_scraper(max_pages=3)
+    result = await run_quote_scraper(max_pages=5)
     print(f"scraped: {result}")
 
 @app.on_event("shutdown")
