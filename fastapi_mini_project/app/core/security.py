@@ -11,13 +11,13 @@ from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.core.config import settings
 from app.models.user import User
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+oauth2_scheme = HTTPBearer()
 
 
 def get_password_hash(password: str) -> str:
@@ -53,7 +53,8 @@ def decode_token(token: str) -> dict:
     except JWTError:
         raise HTTPException(status_code=401, detail="유효하지 않는 토큰입니다.")
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(oauth2_scheme)):
+    token = credentials.credentials
     payload = decode_token(token)
     user_id = payload.get("sub")
 
