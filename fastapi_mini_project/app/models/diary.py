@@ -9,4 +9,4 @@ class Diary(models.Model):
     user = fields.ForeignKeyField("models.User", related_name="diaries") # 한명의 유저가 여러 개의 일기 소유
 
     class Meta:
-        db_table = "diaries"
+        table = "diary"

@@ -2,7 +2,7 @@ from app.core.security import get_password_hash, verify_password, create_access_
 from app.schemas.user import CreateUser, LoginUser, TokenResponse, ResponseUser, RefreshTokenRequest, UpdateUser, UpdatePassword
 from app.repositories.user_repo import get_user_email, get_user_nickname, create_user, add_token_blacklist, get_token_blacklist, get_update_user, get_update_password
 from fastapi import HTTPException
-
+from datetime import datetime, timezone
 
 async def register(user_data: CreateUser):
     response_email = await get_user_email(user_data.email)
@@ -43,7 +43,7 @@ async def login(user_data: LoginUser):
 
 async def logout(token: str, current_user):
     payload = decode_token(token)
-    expire_at = payload.get("exp")
+    expire_at = datetime.fromtimestamp(payload.get("exp"), tz=timezone.utc)
 
     await add_token_blacklist(
         token=token,
