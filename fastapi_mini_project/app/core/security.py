@@ -27,7 +27,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # OAuth2PasswordBearer 대신 HTTPBearer를 쓰는 이유:
 #   OAuth2는 Swagger에서 폼(username/password)으로 토큰 획득 시도 → 우리 API는 JSON 방식이라 불일치
 #   HTTPBearer는 단순히 "토큰 값 직접 입력" 방식 → Swagger와 잘 맞음
-oauth2_scheme = HTTPBearer()
+oauth2_scheme = HTTPBearer(auto_error=False)
 
 
 def get_password_hash(password: str) -> str:
