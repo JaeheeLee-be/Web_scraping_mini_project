@@ -1,3 +1,4 @@
+#question_repo.py
 from app.models.question import Question, UserQuestion
 from tortoise.expressions import RawSQL
 
@@ -14,3 +15,10 @@ async def get_random_question(user_id: int):
 
 async def save_user_question(user_id: int, question_id: int):
     return await UserQuestion.create(user_id=user_id, question_id=question_id)
+
+async def bulk_create_questions(data_list: list):
+    question_objs = [
+        Question(question_text=item['content'])
+        for item in data_list
+    ]
+    await Question.bulk_create(question_objs, ignore_conflicts=True)

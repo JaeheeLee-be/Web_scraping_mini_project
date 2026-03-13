@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
 from app.db.database import TORTOISE_ORM
-from app.api.v1 import auth, diary, quote
+from app.api.v1 import auth, diary, quote, question
 from app.scraping.quote_scraper import run_quote_scraper
 from app.scraping.question_scraper import run_question_scraper
 from app.models.quote import Quote
@@ -12,6 +12,7 @@ app = FastAPI()
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
 app.include_router(diary.router, prefix="/api/v1")
 app.include_router(quote.router, prefix="/api/v1")
+app.include_router(question.router, prefix="/api/v1")
 
 
 @app.on_event("startup")
