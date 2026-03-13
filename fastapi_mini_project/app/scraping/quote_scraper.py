@@ -66,7 +66,7 @@ async def run_quote_scraper(max_pages: int = 5):
                     await asyncio.sleep(0.2)
 
                 except Exception as e:
-                    print(f"⚠️ 상세 페이지 에러 ({detail_url}): {e}")
+                    print(f" 상세 페이지 에러 ({detail_url}): {e}")
                     continue
 
             # 3. 한 페이지 분량의 데이터를 모아서 DB 저장

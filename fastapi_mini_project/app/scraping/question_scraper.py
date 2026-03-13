@@ -6,58 +6,75 @@ from app.repositories import question_repo
 
 async def run_question_scraper(max_pages: int = 5):
     base_url = "https://saramro.com"
+    # URL 구조를 명확히 합니다.
     list_url = f"{base_url}/goodread"
-    headers = {
-        "User-Agent": "python-requests/2.31.0"
-    }
 
-    session = requests.Session()  # 세션 연결 상태 유지
-    total_count = 0  # 최종적으로 저장된 데이터 개수 확인
+    # 1. User-Agent를 실제 브라우저처럼 보이게 수정 (차단 방지 핵심)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+    timeout_config = 15  # 타임아웃 약간 늘림
+
+    session = requests.Session()
+    total_count = 0
 
     for page in range(1, max_pages + 1):
         try:
-            # 1. 목록 페이지 요청
-            resp = session.get(f"{list_url}?page={page}", headers=headers, timeout=10)
-            resp.raise_for_status()  # HTTP 상태가 200이 아니면 에러 발생
+            # 2. 목록 페이지 요청
+            # params를 사용하여 쿼리 스트링을 안전하게 전달
+            resp = session.get(list_url, headers=headers, params={"page": page}, timeout=timeout_config)
+            resp.raise_for_status()
 
-            # 2. 파싱 및 상세 페이지 링크 추출
             soup = BeautifulSoup(resp.text, "html.parser")
+            # 게시판 목록의 링크 추출 (경로가 상대경로인지 절대경로인지 체크)
             links = soup.select("div.bo_tit a")
 
             if not links:
+                print(f"{page}페이지에 링크가 없습니다.")
                 break
 
             page_data = []
             for link in links:
                 detail_url = link.get('href')
+                # 만약 detail_url이 상대경로(/goodread/123)라면 base_url을 붙여줘야 함
+                if detail_url.startswith('/'):
+                    detail_url = base_url + detail_url
 
-                # 3. 상세 페이지 접속 및 데이터 추출
-                detail_resp = session.get(detail_url, headers=headers, timeout=10)
-                detail_soup = BeautifulSoup(detail_resp.text, "html.parser")
-                content_el = detail_soup.select_one("#bo_v_con")
+                try:
+                    # 3. 상세 페이지 접속
+                    detail_resp = session.get(detail_url, headers=headers, timeout=timeout_config)
+                    detail_soup = BeautifulSoup(detail_resp.text, "html.parser")
+                    content_el = detail_soup.select_one("#bo_v_con")
 
-                if content_el:
-                    full_content = content_el.get_text(separator="\n", strip=True)
-                    # 문장 단위 분리 및 정제
-                    lines = [line.strip() for line in full_content.split('\n') if line.strip()]
+                    if content_el:
+                        full_content = content_el.get_text(separator="\n", strip=True)
+                        lines = [line.strip() for line in full_content.split('\n') if line.strip()]
 
-                    for line in lines:
-                        # 숫자와 점으로 시작하는 문장(예: 01.) 위주로 필터링하여 저장
-                        if line and line[0].isdigit():
-                            page_data.append({"content": line})
+                        for line in lines:
+                            # '01. 질문' 형태만 필터링
+                            if line and line[0].isdigit():
+                                page_data.append({"content": line})
 
-                await asyncio.sleep(0.1)  # 상세 페이지 간 짧은 대기
+                    # 상세 페이지 사이의 딜레이
+                    await asyncio.sleep(0.2)
 
-            # 4. DB 저장 및 카운트
+                except Exception as detail_e:
+                    print(f"상세 페이지({detail_url}) 스킵: {detail_e}")
+                    continue
+
+            # 4. DB 저장
             if page_data:
-                await question_repo.bulk_create_questions(page_data)  # 비동기로 한번에 저장
+                await question_repo.bulk_create_questions(page_data)
                 total_count += len(page_data)
+                print(f"{page}페이지 저장 완료: {len(page_data)}개 추출됨")
             else:
-                break
+                print(f"{page}p 추출된 문장이 없습니다.")
 
-            await asyncio.sleep(0.5)  # 서버 부하 방지 및 차단 방지
+            await asyncio.sleep(1.0)  # 페이지 간 충분한 휴식
 
         except Exception as e:
-            return f"에러 발생 ({page}p): {str(e)}"
+            print(f"에러 발생 ({page}p): {str(e)}")
+            # 한 페이지 에러나도 다음 페이지 시도하려면 return 대신 continue
+            continue
 
     return f"총 {total_count}개의 질문 데이터를 저장"
