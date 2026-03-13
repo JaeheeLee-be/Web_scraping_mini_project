@@ -29,6 +29,7 @@ class DiaryService:
             page: int = 1,
             size: int = 5
     ) -> DiaryListResponse:
+
         if page < 1:
             raise HTTPException(status_code=400, detail="페이지는 1이상이어야 합니다.")
         if size < 5 or size > 20:

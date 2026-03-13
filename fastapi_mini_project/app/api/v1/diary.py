@@ -20,7 +20,14 @@ async def list_diaries(
     size: int = 5,
 
 ):
-    return await diary_service.get_diary_list(search, sort, page, size)
+    # Router 코드 수정
+    return await diary_service.get_diary_list(
+
+        search=search,
+        sort=sort,
+        page=page,
+        size=size
+    )
 
 # 2. 랜덤 명언/일기
 @router.get("/random", response_model=QuoteResponse)
@@ -59,3 +66,4 @@ async def delete_diary(
 ):
     await diary_service.delete_diary(diary_id, current_user.id)
     return None
+
