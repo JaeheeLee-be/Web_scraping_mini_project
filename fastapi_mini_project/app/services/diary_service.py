@@ -3,6 +3,7 @@ from app.repositories.diary_repo import (
     create, get_by_id, get_list, update, delete
 )
 from app.schemas.diary import DiaryCreate, DiaryUpdate, DiaryListResponse
+from typing import Optional
 
 
 class DiaryService:
@@ -23,7 +24,7 @@ class DiaryService:
     # Read (목록), size(한 번에 볼 수 있는 목록 갯수, 임의로 정할 수 있지만 20이하만 볼 수 있도록 정함)
     async def get_diary_list(
             self,
-            user_id: int,
+            user_id: Optional[int] = None,
             search: str = "",
             sort: str = "newest",
             page: int = 1,

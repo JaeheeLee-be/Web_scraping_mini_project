@@ -18,11 +18,11 @@ async def list_diaries(
     sort: str = "newest",
     page: int = 1,
     size: int = 5,
-    current_user = Depends(get_current_user)
-):
-    return await diary_service.get_diary_list(current_user.id, search, sort, page, size)
 
-# 2. 랜덤 명언/일기 (아까 NameError 났던 부분 해결)
+):
+    return await diary_service.get_diary_list(search, sort, page, size)
+
+# 2. 랜덤 명언/일기
 @router.get("/random", response_model=QuoteResponse)
 async def get_random_quote():
     return await diary_service.get_random_quote()
@@ -44,7 +44,7 @@ async def create_diary(
     return await diary_service.create_diary(current_user.id, data)
 
 # 5. 수정
-@router.patch("/{diary_id}", response_model=DiaryResponse)
+@router.patch("/update{diary_id}", response_model=DiaryResponse)
 async def update_diary(
     diary_id: int,
     data: DiaryUpdate,
