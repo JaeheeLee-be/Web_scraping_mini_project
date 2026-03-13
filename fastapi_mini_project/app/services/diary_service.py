@@ -16,8 +16,8 @@ class DiaryService:
         diary = await get_by_id(diary_id)
         if not diary:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="일기를 찾을 수 없습니다."
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="수정 권한이 없습니다."
             )
         return diary
 
