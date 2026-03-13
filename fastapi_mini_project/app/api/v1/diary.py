@@ -22,7 +22,7 @@ async def list_diaries(
 ):
     # Router 코드 수정
     return await diary_service.get_diary_list(
-        user_id=None,  # 혹은 로그인된 유저 ID
+
         search=search,
         sort=sort,
         page=page,
@@ -66,3 +66,4 @@ async def delete_diary(
 ):
     await diary_service.delete_diary(diary_id, current_user.id)
     return None
+
