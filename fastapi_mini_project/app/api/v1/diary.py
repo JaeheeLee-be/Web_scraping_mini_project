@@ -31,9 +31,8 @@ async def get_random_quote():
 @router.get("/{diary_id}", response_model=DiaryResponse)
 async def get_diary(
     diary_id: int,
-    current_user = Depends(get_current_user)
 ):
-    return await diary_service.get_diary(diary_id, current_user.id)
+    return await diary_service.get_diary(diary_id)
 
 # 4. 생성
 @router.post("", response_model=DiaryResponse, status_code=status.HTTP_201_CREATED)
@@ -44,7 +43,7 @@ async def create_diary(
     return await diary_service.create_diary(current_user.id, data)
 
 # 5. 수정
-@router.patch("/update{diary_id}", response_model=DiaryResponse)
+@router.patch("/{diary_id}", response_model=DiaryResponse)
 async def update_diary(
     diary_id: int,
     data: DiaryUpdate,

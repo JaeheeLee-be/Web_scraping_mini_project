@@ -3,7 +3,7 @@ from app.repositories.diary_repo import (
     create, get_by_id, get_list, update, delete
 )
 from app.schemas.diary import DiaryCreate, DiaryUpdate, DiaryListResponse
-from typing import Optional
+from app.models.diary import Diary
 
 
 class DiaryService:
@@ -12,8 +12,8 @@ class DiaryService:
         return await create(user_id, data)
 
     # Read (단일)
-    async def get_diary(self, diary_id: int, user_id: int):
-        diary = await get_by_id(diary_id, user_id)
+    async def get_diary(self, diary_id: int) -> Diary:
+        diary = await get_by_id(diary_id)
         if not diary:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -24,7 +24,6 @@ class DiaryService:
     # Read (목록), size(한 번에 볼 수 있는 목록 갯수, 임의로 정할 수 있지만 20이하만 볼 수 있도록 정함)
     async def get_diary_list(
             self,
-            user_id: Optional[int] = None,
             search: str = "",
             sort: str = "newest",
             page: int = 1,
@@ -35,25 +34,37 @@ class DiaryService:
         if size < 5 or size > 20:
             raise HTTPException(status_code=400, detail="목록은 5이상 20이하여야 합니다.")
 
-        total, diaries = await get_list(user_id, search, sort, page, size)
+        total, diary_list = await get_list(search, sort, page, size)
 
         return DiaryListResponse(
             total=total,
             page=page,
             size=size,
-            diaries=diaries
+            diaries=diary_list
         )
 
 
     # Update
     async def update_diary(self, diary_id: int, user_id: int, data: DiaryUpdate):
-        diary = await self.get_diary(diary_id, user_id)
+        diary = await self.get_diary(diary_id)
+        # 작성자 확인
+        if diary.user_id != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="수정 권한이 없습니다."
+            )
         return await update(diary, data)
+
 
     # Delete
     async def delete_diary(self, diary_id: int, user_id: int):
-        diary = await self.get_diary(diary_id, user_id)
+        diary = await self.get_diary(diary_id)
+        # 작성자 확인
+        if diary.user_id != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="삭제 권한이 없습니다."
+            )
         await delete(diary)
-
 
 diary_service = DiaryService()
